@@ -9,7 +9,7 @@ You must designate admins and a super admin. The super admin cannot be banned by
 
 The client checks the server code to verify whether the admins are listed there before executing commands.
 
-##########################################################################################################################################
+#################################
 
 Before using, update both `client.txt` and `server.txt`:
 
