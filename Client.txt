@@ -2,7 +2,7 @@ bool usingMenu = false;
 num playerSelected = 0;
 num commandSelected = 0;
 num playerShifted = 0;
-str[] admins = str["ADMIN NAMES HERE"];
+str[] admins = str["pecadrosasasas","ADMIN HERE"];
 bool check = false;
 
 str[] cmdNames = str["TP ME", "TP THEM", "FREEZE", "KILL", "KICK", "BAN"];
