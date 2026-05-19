@@ -1,4 +1,4 @@
-str[] admins = str["ADMIN NAME HERE"];
+str[] admins = str["pecadrosasasas","ADMIN HERE"];
 public action onNetworkMessage(str id, obj data, str playerID) {
     obj sender = GAME.PLAYERS.findByID(playerID);
     obj targetPlayer = GAME.PLAYERS.findByID(data.playerSelected);
@@ -24,30 +24,42 @@ public action onNetworkMessage(str id, obj data, str playerID) {
             allowed = false;
         }
         if(allowed){
+            str actionMsg = "";
+            
             if(id == "0"){ # TP ME (Sender to Target)
                 sender.position.x = targetPlayer.position.x;
                 sender.position.y = targetPlayer.position.y;
                 sender.position.z = targetPlayer.position.z;
+                actionMsg = "teleported to ->";
             }
             if(id == "1"){ # TP THEM (Target to Sender)
                 targetPlayer.position.x = sender.position.x;
                 targetPlayer.position.y = sender.position.y;
                 targetPlayer.position.z = sender.position.z;
+                actionMsg = "brought ->";
             }
             if(id == "2"){ # TOGGLE FREEZE
                 # The "!" makes it flip. If true -> false. If false -> true.
                 targetPlayer.defaultMovement = !targetPlayer.defaultMovement; 
+                actionMsg = "froze/unfroze ->";
             }
             if(!isSelf){
                 if(id == "3"){
                     (num) targetPlayer.health -= 200;
+                    actionMsg = "killed ->";
                 }
                 if(id == "4"){
                     GAME.ADMIN.kick(data.playerSelected);
+                    actionMsg = "kicked ->";
                 }
                 if(id == "5"){
                     GAME.ADMIN.ban(data.playerSelected);
+                    actionMsg = "banned ->";
                 }
+            }
+            
+            if(actionMsg != ""){
+                GAME.CHAT.broadcast("[SYSTEM] " + toStr sender.username + " " + actionMsg + " " + toStr targetPlayer.username);
             }
         }
     }
