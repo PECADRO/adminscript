@@ -1,28 +1,49 @@
 str[] admins = str["pecadrosasasas","ADMIN HERE"];
+
 public action onNetworkMessage(str id, obj data, str playerID) {
+    if (!data || !data.playerSelected) {
+        return;
+    }
+
     obj sender = GAME.PLAYERS.findByID(playerID);
     obj targetPlayer = GAME.PLAYERS.findByID(data.playerSelected);
+    if (!sender || !targetPlayer) {
+        return; 
+    }
+
     bool isSenderAdmin = false;
     bool isSenderSuper = false;
     bool isTargetAdmin = false;
-#mapmakers
+    
+    #mapmakers
     str k1 = "pecadro";
     str k2 = "sasasas";
+    
     for(num i = 0; i < lengthOf admins; i++){
-        if(toStr sender.username == admins[i]){ isSenderAdmin = true; }
-        if(toStr targetPlayer.username == admins[i]){ isTargetAdmin = true; }
+        if(toStr sender.username == admins[i]){ 
+            isSenderAdmin = true;
+        }
+        if(toStr targetPlayer.username == admins[i]){ 
+            isTargetAdmin = true;
+        }
     }
+    
     if(toStr sender.username == (k1 + k2)){ 
-        isSenderAdmin = true; 
+        isSenderAdmin = true;
         isSenderSuper = true; 
     }
-    if(toStr targetPlayer.username == (k1 + k2)){ isTargetAdmin = true; }
+    if(toStr targetPlayer.username == (k1 + k2)){ 
+        isTargetAdmin = true;
+    }
+    
     if(isSenderAdmin){
         bool isSelf = ((str) sender.id == (str) targetPlayer.id);
         bool allowed = true;
+        
         if(isTargetAdmin && !isSenderSuper){
             allowed = false;
         }
+        
         if(allowed){
             str actionMsg = "";
             
